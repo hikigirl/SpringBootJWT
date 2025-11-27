@@ -2,25 +2,34 @@ spring:
   application:
     name: jwt
 
-  #JDBC(+HikariCp) ??
+  #JDBC(+HikariCp) 설정
   datasource:
     driver-class-name: oracle.jdbc.OracleDriver
     username: springboot
     url: jdbc:oracle:thin:@localhost:1521/xe
     password: java1234
 
-  # JPA ??
+  # JPA 설정
   jpa:
     database: oracle
     hibernate:
       ddl-auto: none
       naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl #?? ?? ??? ???? ??
-    show-sql: true #????? SQL ??(log4jdbc? ??? ??)
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl #자동 캐멀 표기법 사용하지 않음
+    show-sql: true #콘솔로그에 SQL 출력(log4jdbc와 비슷한 기능)
     properties:
       hibernate:
-        format_sql: true #SQL ???
-        highlight_sql: true #SQL ?? ??
+        format_sql: true #SQL 포맷팅
+        highlight_sql: true #SQL 색깔 추가
+
+  # JWT 설정
+  # Git Bash에서
+  # $ openssl rand -hex 64
+  jwt:
+    access-token-expiration: 900000     #15분
+    refresh-token-expiration: 604800000 #7일
+
+
 logging:
   level:
     org:

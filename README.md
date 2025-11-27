@@ -7,20 +7,27 @@
 ### 파일 생성하기
 - project root : script.sql
 - src/main/java - com.test.jwt
+  - auth
+    - `JWTUtil.java`: JWT관련 기능 구현 객체
+    - `LoginFilter.java`
+    - `JWTFilter.java`
   - dto
-    - MemberDTO.java
+    - `MemberDTO.java`
+    - `CustomUserDetails.java`: Authentication, principal 인증객체
   - entity
-    - Member.java
+    - `Member.java`
   - repository
-    - MemberRepository.java(I)
+    - `MemberRepository.java`(I)
   - config
-    - SecurityConfig.java
+    - `SecurityConfig.java`
   - controller
-    - MainController.java
+    - `MainController.java`
   - service
-    - MemberService.java
+    - `MemberService.java`
+    - `CustomUserDetailsService.java`
 
 ---
+
 ## 기능
 1. 회원 가입(REST) - JWT와 무관, 단순 Insert
    1. MainController.java
@@ -28,7 +35,9 @@
    3. + JPA
 2. JWT 기반 로그인 구현하기
    1. Access 토큰 구현하기(인증 티켓 역할)
-   2. 
+   2. 관련 파일
+    - `JWTUtil.java`, `LoginFilter.java`, `JWTFilter.java`
+    - `CustomUserDetails.java`, `CustomUserDetailsService.java`
 
 ---
 
@@ -51,3 +60,14 @@
 #### 인증 방식 - 폼 & JWT
 - 폼 인증: ID/PW 입력 -> Spring Security가 자동 처리 + 세션 기반 인증
 - JWT 인증: ID/PW 입력 -> 커스텀 필터(LoginFilter) 동작 -> AuthenticationManager 직접 인증 처리 -> JWT 토큰 직접 발급 + 응답 헤더 반환 -> 클라이언트는 응답 토큰 보관 -> 이후에 서버로 접속 + 토큰 전달 -> 커스텀 필터(JWTFilter) 동작 + 토큰 유효성/검증
+
+#### Spring Security
+결론은 UserDetails 객체를 만드는 것..
+1. 세션 인증 -> UserDetails <- 인증(DB+폼)
+2. 소셜 인증(OAuth2) -> UserDetails <- 인증(제3자)
+3. JWT 인증 -> UserDetails <- 인증(JWT)
+
+#### JWT 토큰의 구조
+1. header
+2. payload: claim()으로 저장한 정보들
+3. signature(서명): 토큰이 발급된 곳을 검증(위변조 여부를 판단)
