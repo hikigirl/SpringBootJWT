@@ -29,6 +29,8 @@ spring:
     access-token-expiration: 900000     #15분
     refresh-token-expiration: 604800000 #7일
 
+  config:
+    import: "classpath:secret.yaml"
 
 logging:
   level:

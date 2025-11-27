@@ -39,6 +39,7 @@
     - `JWTUtil.java`, `LoginFilter.java`, `JWTFilter.java`
     - `CustomUserDetails.java`, `CustomUserDetailsService.java`
 
+
 ---
 
 ## JWT, Json Web Token
@@ -71,3 +72,17 @@
 1. header
 2. payload: claim()으로 저장한 정보들
 3. signature(서명): 토큰이 발급된 곳을 검증(위변조 여부를 판단)
+
+#### 로그인 처리
+1. 사용자 /login -> ID/PW 전송
+2. LoginFilter 개입
+3. AuthenticationManager에게 인증을 위임
+   1. AuthenticationManager는 CustomUserDetailsService를 호출(loadUserByUsername() 메서드)
+4. 인증 성공 -> JWTUtil 사용 -> 토큰 발급
+   1. 액세스 토큰 발급(JWTUtil을 사용)
+   2. JWT 토큰을 클라이언트에게 전달
+   3. 응답 헤더에 토큰을 담아 반환
+   4. Authorization: 키
+   5. "Bearer " 접두어 + 토큰 : 값
+5. 인증 실패 -> 예외 발생
+6. LoginFilter를 SecurityConfig에 등록 후 테스트

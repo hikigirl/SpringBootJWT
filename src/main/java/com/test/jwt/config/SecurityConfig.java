@@ -1,5 +1,8 @@
 package com.test.jwt.config;
 
+import com.test.jwt.auth.JWTUtil;
+import com.test.jwt.auth.LoginFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -9,10 +12,17 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    //주입(필터 등록때 사용)
+    private final AuthenticationConfiguration configuration;
+    private final JWTUtil jwtUtil;
+
     //OAuth2가 아니므로 password encoder 필요
     @Bean
     BCryptPasswordEncoder encoder() {
@@ -49,6 +59,10 @@ public class SecurityConfig {
 //                .invalidateHttpSession(true)
 //                .deleteCookies("JSESSIONID")
 //        );
+
+        //LoginFilter 등록하기
+        // - /login 요청 -> 이 필터가 가로채서 동작한다.
+        http.addFilterAt(new LoginFilter(manager(configuration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
