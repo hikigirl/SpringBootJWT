@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: jwt
+
+  #JDBC(+HikariCp) ??
+  datasource:
+    driver-class-name: oracle.jdbc.OracleDriver
+    username: springboot
+    url: jdbc:oracle:thin:@localhost:1521/xe
+    password: java1234
+
+  # JPA ??
+  jpa:
+    database: oracle
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl #?? ?? ??? ???? ??
+    show-sql: true #????? SQL ??(log4jdbc? ??? ??)
+    properties:
+      hibernate:
+        format_sql: true #SQL ???
+        highlight_sql: true #SQL ?? ??
+logging:
+  level:
+    org:
+      hibernate:
+        sql: debug
+        orm:
+          jdbc:
+            bind: trace
