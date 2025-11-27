@@ -4,6 +4,6 @@ CREATE TABLE member (
                         role varchar2(50) not null              --권한
 );
 
--- select * from member;
+select * from member;
 -- delete from member;
 commit;

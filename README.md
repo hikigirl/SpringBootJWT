@@ -21,6 +21,16 @@
     - MemberService.java
 
 ---
+## 기능
+1. 회원 가입(REST) - JWT와 무관, 단순 Insert
+   1. MainController.java
+   2. MemberService.java
+   3. + JPA
+2. JWT 기반 로그인 구현하기
+   1. Access 토큰 구현하기(인증 티켓 역할)
+   2. 
+
+---
 
 ## JWT, Json Web Token
 - 사용자 정보/권한을 json 형태로 저장 + 서버가 서명해서 만든 위변조 방지 토큰
@@ -36,3 +46,8 @@
   - 모바일 환경이 생기면서 등장하게 된 개념..
   - View단을 React로 개발한다면 JWT 사용하는 것이 편함(분산 서버이기 때문에)
   - React 사용할 때 세션 방식을 사용할 수는 있으나... 백엔드 서버 세션과 프론트 서버 세션을 동기화하는 서버가 한대 더 필요함
+- 세션: 서버가 한 대일 때
+
+#### 인증 방식 - 폼 & JWT
+- 폼 인증: ID/PW 입력 -> Spring Security가 자동 처리 + 세션 기반 인증
+- JWT 인증: ID/PW 입력 -> 커스텀 필터(LoginFilter) 동작 -> AuthenticationManager 직접 인증 처리 -> JWT 토큰 직접 발급 + 응답 헤더 반환 -> 클라이언트는 응답 토큰 보관 -> 이후에 서버로 접속 + 토큰 전달 -> 커스텀 필터(JWTFilter) 동작 + 토큰 유효성/검증
