@@ -1,4 +1,8 @@
 package com.test.jwt.repository;
 
-public interface MemberRepository {
+import com.test.jwt.entity.Member;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface MemberRepository extends JpaRepository<Member, String> {
+
 }
