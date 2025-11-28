@@ -92,3 +92,10 @@
 - JWTFilter -> 게이트 -> 티켓 확인 = Authorization(허가)
   - 현재 요청(접속)한 사용자가 유효한 JWT 토큰을 가지고 있는지 검사
   - 이 사용자를 인증된 사용자로 인식하게 만든다.
+- 구현 내용
+  1. 토큰 유무 체크 & "Bearer" 접두어 유무 체크
+  2. 토큰에서 username과 role을 추출 -> Spring Security 인증 객체 생성
+  3. Security 처리 
+    1. Member 엔티티
+    2. CustomUserDetails(+Member) 인증 객체
+    3. 시큐리티에 적용

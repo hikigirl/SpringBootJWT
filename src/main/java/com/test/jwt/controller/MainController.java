@@ -3,9 +3,17 @@ package com.test.jwt.controller;
 import com.test.jwt.dto.MemberDTO;
 import com.test.jwt.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,6 +28,32 @@ public class MainController {
     @GetMapping ("/member")
     public String member(){
         return "MainController >>>>> /member";
+    }
+    @GetMapping(value="/member/info")
+    public ResponseEntity<?> getMemberInfo() {
+        //Rest Server 응답 데이터
+        //1. 문자열 or JSON
+        //2. 문자열 or JSON + 상태 코드(200, 500, 등등)
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("인증되지 않은 사용자입니다.");
+        }
+
+        String username = authentication.getName();
+
+        String role = authentication.getAuthorities().stream()
+                .findFirst()
+                .map(GrantedAuthority::getAuthority)
+                .orElse("UNKNOWN");
+
+        Map<String, String> userInfo = new HashMap<>();
+        userInfo.put("username", username);
+        userInfo.put("role", role);
+
+        // userInfo로 json 생성
+        // 상태코드는 200
+        return ResponseEntity.ok(userInfo);
     }
     @GetMapping ("/admin")
     public String admin(){

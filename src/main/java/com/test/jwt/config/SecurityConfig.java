@@ -14,6 +14,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -32,6 +35,9 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        //CORS 설정
+        http.cors(auth -> auth.configurationSource(corsConfigurationSource()));
+
         //CSRF 비활성
         http.csrf(auth -> auth.disable());
         // 아래 세가지는 거의 고정값
@@ -48,7 +54,7 @@ public class SecurityConfig {
         //허가 URL
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/", "/login/**", "/join/**", "/joinok/**").permitAll()
-                .requestMatchers("/member").hasAnyRole("MEMBER", "ADMIN")
+                .requestMatchers("/member/**").hasAnyRole("MEMBER", "ADMIN")
                 .requestMatchers("/admin").hasRole("ADMIN")
                 .anyRequest().authenticated()
         );
@@ -82,4 +88,26 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
+    //CORS 설정
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+
+        CorsConfiguration config = new CorsConfiguration();
+
+        config.addAllowedOrigin("http://localhost:8081"); //클라이언트 주소를 허용
+
+        config.addAllowedMethod("*");
+
+        config.addAllowedHeader("*");
+
+        config.setAllowCredentials(true);
+
+        config.addExposedHeader("Authorization");
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+
+        source.registerCorsConfiguration("/**", config);
+
+        return source;
+    }
 }

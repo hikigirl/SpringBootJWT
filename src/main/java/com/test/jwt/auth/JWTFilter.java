@@ -47,8 +47,6 @@ public class JWTFilter extends OncePerRequestFilter {
             username = jwtUtil.getUsername(token);
             role = jwtUtil.getRole(token);
 
-
-
         } catch (Exception e) {
             System.out.println("JWTFilter >>>>> Unauthorized");
             //response.setStatus(401); //401 Unauthorized
