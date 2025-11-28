@@ -1,5 +1,6 @@
 package com.test.jwt.config;
 
+import com.test.jwt.auth.JWTFilter;
 import com.test.jwt.auth.JWTUtil;
 import com.test.jwt.auth.LoginFilter;
 import lombok.RequiredArgsConstructor;
@@ -60,8 +61,13 @@ public class SecurityConfig {
 //                .deleteCookies("JSESSIONID")
 //        );
 
+        //필터 작성 순서는 의미 없고 메서드에서 지정하는 순서가 중요..
+        //JWTFilter 등록하기 -> LoginFilter보다 JWTFilter가 더 먼저 실행되어야 한다.
+        http.addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+
         //LoginFilter 등록하기
         // - /login 요청 -> 이 필터가 가로채서 동작한다.
+        // - UsernamePasswordAuthenticationFilter(시큐리티 기본 인증 필터) -> LoginFilter(사용자 정의)로 교체
         http.addFilterAt(new LoginFilter(manager(configuration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

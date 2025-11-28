@@ -26,7 +26,8 @@ spring:
   # Git Bash에서
   # $ openssl rand -hex 64
   jwt:
-    access-token-expiration: 900000     #15분
+#    access-token-expiration: 900000     #15분
+    access-token-expiration: 60000     #1분
     refresh-token-expiration: 604800000 #7일
 
   config:

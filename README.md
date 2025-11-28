@@ -86,3 +86,9 @@
    5. "Bearer " 접두어 + 토큰 : 값
 5. 인증 실패 -> 예외 발생
 6. LoginFilter를 SecurityConfig에 등록 후 테스트
+
+#### JWTFilter - 인증 티켓을 확인하는 작업
+- LoginFilter -> 매표소 -> 티켓 발급 = Authentication(인증)
+- JWTFilter -> 게이트 -> 티켓 확인 = Authorization(허가)
+  - 현재 요청(접속)한 사용자가 유효한 JWT 토큰을 가지고 있는지 검사
+  - 이 사용자를 인증된 사용자로 인식하게 만든다.
