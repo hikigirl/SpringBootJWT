@@ -45,6 +45,7 @@ public class SecurityConfig {
         // 아래 세가지는 거의 고정값
         //폼 로그인 -> 비활성
         http.formLogin(auth -> auth.disable());
+        http.logout(auth -> auth.disable());
         //기본 인증 비활성
         http.httpBasic(auth -> auth.disable());
         //세션 설정: 기존의 세션 인증 방식을 비활성화
