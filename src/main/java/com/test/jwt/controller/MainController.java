@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -74,22 +75,27 @@ public class MainController {
     }
 
     @PostMapping("/logout")
+    @Transactional
     public ResponseEntity<?> logout(@CookieValue(value = "refresh_cookie", required = false) String refreshToken, HttpServletResponse response) {
+        // 쿠키 만료시키기(만료시간이 0인 쿠키를 전송해서 쿠키를 삭제시키기)
+        Cookie cookie = new Cookie("refresh_cookie", null);
+        cookie.setMaxAge(0); //쿠키 만료
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        response.addCookie(cookie);
+
         if (refreshToken == null) {
             return ResponseEntity.badRequest().body("Refresh token is missing");
         }
         try {
-            //로그아웃 + 리프레시토큰 -> username -> DB삭제, 쿠키만료
+            //로그아웃 + 리프레시토큰 -> username -> DB삭제
             String username = jwtUtil.getUsername(refreshToken);
-            repository.deleteByUsername(username);
 
-            // 쿠키 만료시키기(만료시간이 0인 쿠키를 전송해서 쿠키를 삭제시키기)
-            Cookie cookie = new Cookie("refresh_cookie", null);
-            cookie.setMaxAge(0); //쿠키 만료
-            cookie.setPath("/");
-            cookie.setHttpOnly(true);
-            response.addCookie(cookie);
-
+            // JPA
+            // - insert, update, delete -> 트랜잭션 필수
+            // - repo.save(엔티티) -> 내부적으로 트랜잭션 처리 되어있음.
+            //repository.delete(엔티티)
+            repository.deleteByUsername(username); //이건 직접작성했으므로.. 트랜잭션 처리가 필요해서 어노테이션 붙여줘야 함
         } catch (Exception e) {
             e.printStackTrace();
         }
