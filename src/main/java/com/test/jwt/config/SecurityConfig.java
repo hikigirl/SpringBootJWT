@@ -3,6 +3,7 @@ package com.test.jwt.config;
 import com.test.jwt.auth.JWTFilter;
 import com.test.jwt.auth.JWTUtil;
 import com.test.jwt.auth.LoginFilter;
+import com.test.jwt.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +27,7 @@ public class SecurityConfig {
     //주입(필터 등록때 사용)
     private final AuthenticationConfiguration configuration;
     private final JWTUtil jwtUtil;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     //OAuth2가 아니므로 password encoder 필요
     @Bean
@@ -53,7 +55,7 @@ public class SecurityConfig {
 
         //허가 URL
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/login/**", "/join/**", "/joinok/**").permitAll()
+                .requestMatchers("/", "/login/**", "/join/**", "/joinok/**", "/logout", "/reissue").permitAll()
                 .requestMatchers("/member/**").hasAnyRole("MEMBER", "ADMIN")
                 .requestMatchers("/admin").hasRole("ADMIN")
                 .anyRequest().authenticated()
@@ -74,7 +76,8 @@ public class SecurityConfig {
         //LoginFilter 등록하기
         // - /login 요청 -> 이 필터가 가로채서 동작한다.
         // - UsernamePasswordAuthenticationFilter(시큐리티 기본 인증 필터) -> LoginFilter(사용자 정의)로 교체
-        http.addFilterAt(new LoginFilter(manager(configuration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
+        // - 생성자 수정(refreshtoken, 리프레쉬토큰 만료시간)해서 여기에도 추가 필요
+        http.addFilterAt(new LoginFilter(manager(configuration), jwtUtil, refreshTokenRepository, jwtUtil.getRefreshExpiredMs()), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

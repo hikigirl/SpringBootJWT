@@ -15,7 +15,7 @@ public class JWTUtil {
 
     private final SecretKey secretKey;
     private final Long accessExpiredMs; // 액세스 토큰의 만료시간(짧게 주는 편, 만료되면 버리고 새로발급하는 방식)
-    private final Long refreshExpiredMs; // 리프레쉬 토큰의 만료시간
+    private final Long refreshExpiredMs; // 리프레쉬 토큰의 만료시간, getter 필요
 
     public JWTUtil(
             @Value("${spring.jwt.secret}") String secretKey,
@@ -78,4 +78,7 @@ public class JWTUtil {
         return createJWT(username, role, refreshExpiredMs);
     }
 
+    public Long getRefreshExpiredMs() {
+        return refreshExpiredMs;
+    }
 }

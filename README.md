@@ -16,8 +16,10 @@
     - `CustomUserDetails.java`: Authentication, principal 인증객체
   - entity
     - `Member.java`
+    - `RefreshToken.java`
   - repository
     - `MemberRepository.java`(I)
+    - `RefreshTokenRepository.java`
   - config
     - `SecurityConfig.java`
   - controller
@@ -38,7 +40,6 @@
    2. 관련 파일
     - `JWTUtil.java`, `LoginFilter.java`, `JWTFilter.java`
     - `CustomUserDetails.java`, `CustomUserDetailsService.java`
-
 
 ---
 
@@ -99,3 +100,12 @@
     1. Member 엔티티
     2. CustomUserDetails(+Member) 인증 객체
     3. 시큐리티에 적용
+
+#### 리프레쉬 토큰 구현하기
+- 리프레쉬 토큰을 저장할 테이블 구현 필요
+- 엔티티, 리포지토리
+- 처리 순서
+  1. 로그인(LoginFilter)
+     1. AccessToken 발급 -> 클라이언트 전달 + 서버측 모름
+     2. RefreshToken 발급 -> 클라이언트 전달 + 서버측 저장(DB)
+  2. 

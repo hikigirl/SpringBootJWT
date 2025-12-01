@@ -1,13 +1,18 @@
 package com.test.jwt.controller;
 
+import com.test.jwt.auth.JWTUtil;
 import com.test.jwt.dto.MemberDTO;
+import com.test.jwt.repository.RefreshTokenRepository;
 import com.test.jwt.service.MemberService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +25,8 @@ import java.util.Map;
 public class MainController {
 
     private final MemberService service;
+    private final JWTUtil jwtUtil;
+    private final RefreshTokenRepository repository;
 
     @GetMapping ("/")
     public String index(){
@@ -66,4 +73,26 @@ public class MainController {
         return "MainController >>>>> /joinok";
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@CookieValue(value = "refresh_cookie", required = false) String refreshToken, HttpServletResponse response) {
+        if (refreshToken == null) {
+            return ResponseEntity.badRequest().body("Refresh token is missing");
+        }
+        try {
+            //로그아웃 + 리프레시토큰 -> username -> DB삭제, 쿠키만료
+            String username = jwtUtil.getUsername(refreshToken);
+            repository.deleteByUsername(username);
+
+            // 쿠키 만료시키기(만료시간이 0인 쿠키를 전송해서 쿠키를 삭제시키기)
+            Cookie cookie = new Cookie("refresh_cookie", null);
+            cookie.setMaxAge(0); //쿠키 만료
+            cookie.setPath("/");
+            cookie.setHttpOnly(true);
+            response.addCookie(cookie);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok("Logout successful");
+    }
 }
