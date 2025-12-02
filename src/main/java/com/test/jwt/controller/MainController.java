@@ -126,6 +126,10 @@ public class MainController {
             //액세스 토큰 재발급
             String newAccessToken = jwtUtil.createAccessToken(username, role);
 
+            //리프레시 토큰 재발급
+            // 1. 리프레시 토큰 재생성 -> jwtUtil
+            // 2. 리프레시 토큰 -> httponly 쿠키 -> 클라이언트 전달
+            // 3. DB 리프레시 토큰 업데이트
             response.addHeader("Authorization", "Bearer " + newAccessToken);
 
             return ResponseEntity.ok("Token reissued");
