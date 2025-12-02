@@ -2,8 +2,11 @@ package com.test.jwt.controller;
 
 import com.test.jwt.auth.JWTUtil;
 import com.test.jwt.dto.MemberDTO;
+import com.test.jwt.entity.RefreshToken;
 import com.test.jwt.repository.RefreshTokenRepository;
 import com.test.jwt.service.MemberService;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -100,5 +103,37 @@ public class MainController {
             e.printStackTrace();
         }
         return ResponseEntity.ok("Logout successful");
+    }
+
+    //액세스 토큰이 만료되면 리프레시토큰을 보내서 액세스 토큰을 재발급
+    @PostMapping("/reissue")
+    public ResponseEntity<?> reissue(
+            @CookieValue("refresh_cookie") String refreshToken,
+            HttpServletResponse response) {
+
+        try {
+            //JWT 토큰 검증 + 정보 추출
+            String username = jwtUtil.getUsername(refreshToken);
+            String role = jwtUtil.getRole(refreshToken);
+
+            //DB 조회
+            RefreshToken tokenEntity = repository.findByUsername(username);
+
+            if (tokenEntity == null || !tokenEntity.getToken().equals(refreshToken)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token"); //401에러
+            }
+
+            //액세스 토큰 재발급
+            String newAccessToken = jwtUtil.createAccessToken(username, role);
+
+            response.addHeader("Authorization", "Bearer " + newAccessToken);
+
+            return ResponseEntity.ok("Token reissued");
+
+        } catch (ExpiredJwtException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token expired");
+        } catch (JwtException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
+        }
     }
 }

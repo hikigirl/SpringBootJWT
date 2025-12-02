@@ -56,7 +56,7 @@ public class SecurityConfig {
 
         //허가 URL
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/login/**", "/join/**", "/joinok/**", "/logout/**", "/reissue").permitAll()
+                .requestMatchers("/", "/login/**", "/join/**", "/joinok/**", "/logout/**", "/reissue/**").permitAll()
                 .requestMatchers("/member/**").hasAnyRole("MEMBER", "ADMIN")
                 .requestMatchers("/admin").hasRole("ADMIN")
                 .anyRequest().authenticated()
